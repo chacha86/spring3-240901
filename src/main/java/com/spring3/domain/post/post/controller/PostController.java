@@ -38,7 +38,16 @@ public class PostController {
             String content
     ) {
 
-        if(title.isBlank()) return "제목을 입력해주세요.";
+        if(title.isBlank()) return """
+                <div style="color:red">제목을 입력해주세요.</div>
+                <form method="POST" action="/posts/doWrite">
+                  <input type="text" name="title">
+                  <br>
+                  <textarea name="content"></textarea>
+                  <br>
+                  <input type="submit" value="작성">
+                </form>
+                """;
         if(content.isBlank()) return "내용을 입력해주세요.";
 
         Post post = postService.write(title, content);
