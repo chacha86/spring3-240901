@@ -77,24 +77,12 @@ public class PostController {
 
             String fieldName = "title";
 
-            // 명령형
-//            List<FieldError> fieldErrorsList = bindingResult.getFieldErrors();
-//
-//            StringBuilder sb = new StringBuilder("");
-//
-//            for(FieldError fieldError : fieldErrorsList) {
-//               sb.append(fieldError.getDefaultMessage());
-//                sb.append("<br>");
-//            }
-//
-//            String errorMessages = sb.toString();
-
+            FieldError fieldError = bindingResult.getFieldError();
 
             // 스트림
             String errorMessages = bindingResult.getFieldErrors()
                     .stream()
-                    .map(FieldError::getDefaultMessage)
-                    .sorted()
+                    .map(field -> field.getField() + "-" + field.getDefaultMessage())
                     .collect(Collectors.joining("<br>"));
 
             return getWriteFormHtml(errorMessages, form.title, form.content, fieldName);
