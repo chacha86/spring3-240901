@@ -71,7 +71,7 @@ public class PostController {
 
         Post post = postService.write(form.title, form.content);
 
-        return "%d번 글이 작성되었습니다.".formatted(post.getId());
+        return "post/writeDone";
     }
 
 }
