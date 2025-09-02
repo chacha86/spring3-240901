@@ -9,7 +9,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -25,7 +24,7 @@ public class PostController {
         this.postService = postService;
     }
 
-    private String getWriteFormHtml(String errorMessage, String title, String content, String errorFieldName) {
+    private String getWriteFormHtml(String errorMessage, String title, String content) {
         return """
                 <ul style="color:red">
                     %s
@@ -40,14 +39,15 @@ public class PostController {
                 </form>
                 
                 <script>
-                    const errorFieldName = "%s";
+                    const li = document.querySelector("ul li");
+                    const errorFieldName = li.dataset.errorFieldName;
                     
                     if(errorFieldName.length > 0) {
                         const form = document.querySelector("form");
                         form[errorFieldName].focus();
                     }
                 </script>
-                """.formatted(errorMessage, title, content, errorFieldName);
+                """.formatted(errorMessage, title, content);
     }
 
     @AllArgsConstructor
@@ -66,7 +66,7 @@ public class PostController {
     @GetMapping("/posts/write")
     @ResponseBody
     public String write() {
-        return getWriteFormHtml("", "", "", "");
+        return getWriteFormHtml("", "", "");
     }
 
     @PostMapping("/posts/doWrite")
@@ -76,21 +76,18 @@ public class PostController {
     ) {
 
         if(bindingResult.hasErrors()) {
-
-            String fieldName = "title";
-
-            FieldError fieldError = bindingResult.getFieldError();
-
             // 스트림
             String errorMessages = bindingResult.getFieldErrors()
                     .stream()
                     .map(field -> field.getField() + "-" + field.getDefaultMessage())
                     .map(message -> message.split("-"))
-                    .map(bits -> "<!-- %s --><li>%s</li>".formatted(bits[1], bits[2]))
+                    .map(bits -> """
+                            <!-- %s --><li data-error-field-name="%s">%s</li>
+                            """.formatted(bits[1], bits[0], bits[2]))
                     .sorted()
                     .collect(Collectors.joining("\n"));
 
-            return getWriteFormHtml(errorMessages, form.title, form.content, fieldName);
+            return getWriteFormHtml(errorMessages, form.title, form.content);
         }
 
 
