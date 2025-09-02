@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.util.stream.Collectors;
+
 @Controller
 public class PostController {
 
@@ -72,15 +74,15 @@ public class PostController {
     ) {
 
         if(bindingResult.hasErrors()) {
-            FieldError fieldError = bindingResult.getFieldError();
-            String fieldName = fieldError.getField();
-            String errorMessage = fieldError.getDefaultMessage();
 
-            System.out.println("fieldName : " + fieldName);
-            System.out.println("errorMessage : " + errorMessage);
+            String fieldName = "title";
 
-            return getWriteFormHtml(errorMessage, form.title, form.content, fieldName);
+            String errorMessages = bindingResult.getFieldErrors()
+                    .stream()
+                    .map(FieldError::getDefaultMessage)
+                    .collect(Collectors.joining("<br>"));
 
+            return getWriteFormHtml(errorMessages, form.title, form.content, fieldName);
         }
 
 
