@@ -27,7 +27,9 @@ public class PostController {
 
     private String getWriteFormHtml(String errorMessage, String title, String content, String errorFieldName) {
         return """
-                <div style="color:red">%s</div>
+                <ul style="color:red">
+                    %s
+                </ul>
                 
                 <form method="POST" action="/posts/doWrite">
                   <input type="text" name="title" value="%s" autoFocus>
@@ -83,7 +85,10 @@ public class PostController {
             String errorMessages = bindingResult.getFieldErrors()
                     .stream()
                     .map(field -> field.getField() + "-" + field.getDefaultMessage())
-                    .collect(Collectors.joining("<br>"));
+                    .map(message -> message.split("-"))
+                    .map(bits -> "<!-- %s --><li>%s</li>".formatted(bits[1], bits[2]))
+                    .sorted()
+                    .collect(Collectors.joining("\n"));
 
             return getWriteFormHtml(errorMessages, form.title, form.content, fieldName);
         }
