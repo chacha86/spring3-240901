@@ -23,6 +23,7 @@ public class PostController {
         this.postService = postService;
     }
 
+
     @AllArgsConstructor
     @Getter
     public static class PostWriteForm {
@@ -35,13 +36,12 @@ public class PostController {
         private String content;
     }
 
-
     @GetMapping("/posts/write")
     public String write(@ModelAttribute("form") PostWriteForm form) {
         return "post/write";
     }
 
-    @PostMapping("/posts/doWrite")
+    @PostMapping("/posts/write")
     public String doWrite(
             @ModelAttribute("form") @Valid PostWriteForm form, BindingResult bindingResult,
             Model model
