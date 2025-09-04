@@ -75,7 +75,7 @@ public class CommentController {
     }
 
 
-    @GetMapping("/posts/{postId}/comments/{commentId}/delete")
+    @DeleteMapping("/posts/{postId}/comments/{commentId}/delete")
     @Transactional
     public String doDelete(
             @PathVariable Long postId,
